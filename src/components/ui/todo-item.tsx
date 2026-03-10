@@ -2,7 +2,15 @@ import db from "@/utils/db";
 import { useThemeColor } from "@/utils/theme";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useRef, useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  Alert,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 
 type TodoItemProps = {
@@ -39,10 +47,40 @@ export default function TodoItem({ item }: TodoItemProps) {
   };
 
   const deleteTodo = () => {
-    swipeableRef.current?.close();
-    setTimeout(() => {
-      db.transact(db.tx.todos[item.id].delete());
-    }, 150);
+    if (Platform.OS === "web") {
+      const confirmed = window.confirm(
+        "Are you sure you want to delete this todo?",
+      );
+      if (confirmed) {
+        swipeableRef.current?.close();
+        setTimeout(() => {
+          db.transact(db.tx.todos[item.id].delete());
+        }, 150);
+      } else {
+        swipeableRef.current?.close();
+      }
+      return;
+    }
+
+    Alert.alert("Delete Todo", "Are you sure you want to delete this todo?", [
+      {
+        text: "Cancel",
+        style: "cancel",
+        onPress: () => {
+          swipeableRef.current?.close();
+        },
+      },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: () => {
+          swipeableRef.current?.close();
+          setTimeout(() => {
+            db.transact(db.tx.todos[item.id].delete());
+          }, 150);
+        },
+      },
+    ]);
   };
 
   const saveRename = () => {
