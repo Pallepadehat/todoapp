@@ -2,12 +2,14 @@ import EmptyState from "@/components/ui/empty-state";
 import Skeleton from "@/components/ui/skeleton";
 import TodoItem from "@/components/ui/todo-item";
 import db from "@/utils/db";
+import { useThemeColor } from "@/utils/theme";
 import React, { Activity, useMemo } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 export default function TodolistScreen() {
   const query = { todos: {} };
   const { isLoading, error, data } = db.useQuery(query);
+  const colors = useThemeColor();
 
   const isEmpty = data?.todos?.length === 0;
 
@@ -24,7 +26,7 @@ export default function TodolistScreen() {
   }, [data?.todos]);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Activity mode={isLoading ? "visible" : "hidden"}>
         <Skeleton />
       </Activity>
@@ -39,7 +41,7 @@ export default function TodolistScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 100 }}
         >
-          <Text style={styles.title}>Todos</Text>
+          <Text style={[styles.title, { color: colors.text }]}>Todos</Text>
           {sortedTodos.map((item: any) => (
             <TodoItem key={item.id} item={item} />
           ))}
@@ -63,6 +65,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "#eee",
   },
 });

@@ -1,4 +1,5 @@
 import db from "@/utils/db";
+import { useThemeColor } from "@/utils/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { id } from "@instantdb/react-native";
 import { useState } from "react";
@@ -14,6 +15,7 @@ export default function FloatingTodoInput() {
   const [text, setText] = useState("");
   const insets = useSafeAreaInsets();
   const height = useSharedValue(0);
+  const colors = useThemeColor();
 
   useKeyboardHandler(
     {
@@ -60,11 +62,20 @@ export default function FloatingTodoInput() {
         { bottom: Math.max(insets.bottom, 20) },
       ]}
     >
-      <View style={styles.view}>
+      <View
+        style={[
+          styles.view,
+          {
+            backgroundColor: colors.card,
+            borderColor: colors.borderLight,
+            boxShadow: `0px 10px 20px ${colors.borderLight}`,
+          },
+        ]}
+      >
         <TextInput
           placeholder="What needs to be done?"
-          placeholderTextColor="#8e8e93"
-          style={styles.input}
+          placeholderTextColor={colors.textSecondary}
+          style={[styles.input, { color: colors.text }]}
           value={text}
           onChangeText={setText}
           onSubmitEditing={handleAdd}
@@ -74,7 +85,8 @@ export default function FloatingTodoInput() {
           onPress={handleAdd}
           style={({ pressed }) => [
             styles.button,
-            !text.trim() && styles.buttonDisabled,
+            { backgroundColor: colors.primaryLight },
+            !text.trim() && { backgroundColor: colors.primaryDisabled },
             pressed && styles.buttonPressed,
           ]}
           disabled={!text.trim()}
@@ -82,7 +94,7 @@ export default function FloatingTodoInput() {
           <Ionicons
             name="arrow-up"
             size={20}
-            color={!text.trim() ? "#ccc" : "#007AFF"}
+            color={!text.trim() ? colors.disabled : colors.primary}
           />
         </Pressable>
       </View>
@@ -93,8 +105,8 @@ export default function FloatingTodoInput() {
 const styles = StyleSheet.create({
   wrapper: {
     position: "absolute",
-    left: 20,
-    right: 20,
+    left: 10,
+    right: 10,
   },
   view: {
     flexDirection: "row",
@@ -103,9 +115,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 8,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "rgba(0,0,0,0.1)",
-    backgroundColor: "#ffffff",
-    boxShadow: "0px 10px 20px rgba(0, 0, 0, 0.1)",
     elevation: 1,
   },
   input: {
@@ -113,7 +122,6 @@ const styles = StyleSheet.create({
     height: 40,
     paddingHorizontal: 12,
     fontSize: 16,
-    color: "#000",
     ...Platform.select({
       web: {
         outlineStyle: "none",
@@ -124,12 +132,8 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 17,
-    backgroundColor: "rgba(0,122,255,0.1)",
     justifyContent: "center",
     alignItems: "center",
-  },
-  buttonDisabled: {
-    backgroundColor: "transparent",
   },
   buttonPressed: {
     opacity: 0.7,

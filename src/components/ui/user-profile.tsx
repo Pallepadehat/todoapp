@@ -1,4 +1,5 @@
 import db from "@/utils/db";
+import { useThemeColor } from "@/utils/theme";
 import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetView,
@@ -38,6 +39,7 @@ export default function UserProfile({ isOpen, onClose }: UserProfileProps) {
   const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ["50%"], []);
   const nicknameInputRef = useRef<TextInput>(null);
+  const colors = useThemeColor();
 
   const user = db.useUser();
   const email = user?.email ?? null;
@@ -118,6 +120,8 @@ export default function UserProfile({ isOpen, onClose }: UserProfileProps) {
       onClose={onClose}
       keyboardBehavior="interactive"
       keyboardBlurBehavior="restore"
+      backgroundStyle={{ backgroundColor: colors.background }}
+      handleIndicatorStyle={{ backgroundColor: colors.disabled }}
     >
       <BottomSheetView style={styles.container}>
         <KeyboardAvoidingView
@@ -126,26 +130,39 @@ export default function UserProfile({ isOpen, onClose }: UserProfileProps) {
         >
           {/* Avatar + name */}
           <View style={styles.profile}>
-            <View style={styles.avatar}>
-              <Text style={styles.avatarText}>{getInitials(displayName)}</Text>
+            <View
+              style={[
+                styles.avatar,
+                { backgroundColor: colors.avatarBackground },
+              ]}
+            >
+              <Text style={[styles.avatarText, { color: colors.avatarText }]}>
+                {getInitials(displayName)}
+              </Text>
             </View>
-            <Text style={styles.displayName}>{displayName}</Text>
-            <Text style={styles.email}>{email ?? "—"}</Text>
+            <Text style={[styles.displayName, { color: colors.text }]}>
+              {displayName}
+            </Text>
+            <Text style={[styles.email, { color: colors.textSecondary }]}>
+              {email ?? "—"}
+            </Text>
           </View>
 
           {/* Info card */}
-          <View style={styles.card}>
+          <View style={[styles.card, { backgroundColor: colors.card }]}>
             {/* Nickname row */}
             <View style={styles.row}>
-              <Text style={styles.rowLabel}>Nickname</Text>
+              <Text style={[styles.rowLabel, { color: colors.text }]}>
+                Nickname
+              </Text>
               {isEditingNick ? (
                 <TextInput
                   ref={nicknameInputRef}
-                  style={styles.input}
+                  style={[styles.input, { color: colors.text }]}
                   value={nickDraft}
                   onChangeText={setNickDraft}
                   placeholder="Add a nickname"
-                  placeholderTextColor="#C7C7CC"
+                  placeholderTextColor={colors.textSecondary}
                   returnKeyType="done"
                   onSubmitEditing={handleSaveNickname}
                   autoCorrect={false}
@@ -153,7 +170,11 @@ export default function UserProfile({ isOpen, onClose }: UserProfileProps) {
               ) : (
                 <Pressable onPress={handleStartEdit} hitSlop={12}>
                   <Text
-                    style={nickDraft ? styles.rowValue : styles.rowValueEmpty}
+                    style={
+                      nickDraft
+                        ? [styles.rowValue, { color: colors.textSecondary }]
+                        : [styles.rowValueEmpty, { color: colors.primary }]
+                    }
                   >
                     {nickDraft || "Add"}
                   </Text>
@@ -161,12 +182,19 @@ export default function UserProfile({ isOpen, onClose }: UserProfileProps) {
               )}
             </View>
 
-            <View style={styles.separator} />
+            <View
+              style={[styles.separator, { backgroundColor: colors.border }]}
+            />
 
             {/* Email row */}
             <View style={styles.row}>
-              <Text style={styles.rowLabel}>Email</Text>
-              <Text style={styles.rowValue} numberOfLines={1}>
+              <Text style={[styles.rowLabel, { color: colors.text }]}>
+                Email
+              </Text>
+              <Text
+                style={[styles.rowValue, { color: colors.textSecondary }]}
+                numberOfLines={1}
+              >
                 {email ?? "—"}
               </Text>
             </View>
@@ -178,22 +206,28 @@ export default function UserProfile({ isOpen, onClose }: UserProfileProps) {
               <Pressable
                 style={({ pressed }) => [
                   styles.actionButton,
-                  styles.cancelButton,
+                  { backgroundColor: colors.card },
                   pressed && styles.pressed,
                 ]}
                 onPress={handleCancelEdit}
               >
-                <Text style={styles.cancelText}>Cancel</Text>
+                <Text
+                  style={[styles.cancelText, { color: colors.textSecondary }]}
+                >
+                  Cancel
+                </Text>
               </Pressable>
               <Pressable
                 style={({ pressed }) => [
                   styles.actionButton,
-                  styles.saveButton,
+                  { backgroundColor: colors.primary },
                   pressed && styles.pressed,
                 ]}
                 onPress={handleSaveNickname}
               >
-                <Text style={styles.saveText}>Save</Text>
+                <Text style={[styles.saveText, { color: colors.white }]}>
+                  Save
+                </Text>
               </Pressable>
             </View>
           )}
@@ -205,11 +239,14 @@ export default function UserProfile({ isOpen, onClose }: UserProfileProps) {
             <Pressable
               style={({ pressed }) => [
                 styles.signOutButton,
+                { backgroundColor: colors.card },
                 pressed && styles.pressed,
               ]}
               onPress={handleSignOut}
             >
-              <Text style={styles.signOutText}>Sign Out</Text>
+              <Text style={[styles.signOutText, { color: colors.error }]}>
+                Sign Out
+              </Text>
             </Pressable>
           )}
         </KeyboardAvoidingView>
@@ -236,7 +273,6 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: "#D1D1D6",
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 8,
@@ -244,28 +280,23 @@ const styles = StyleSheet.create({
   avatarText: {
     fontSize: 22,
     fontWeight: "600",
-    color: "#3C3C43",
   },
   displayName: {
     fontSize: 17,
     fontWeight: "600",
-    color: "#000",
   },
   email: {
     fontSize: 13,
-    color: "#8E8E93",
   },
 
   // Card
   card: {
-    backgroundColor: "#F2F2F7",
     borderRadius: 12,
     overflow: "hidden",
     marginTop: 8,
   },
   separator: {
     height: StyleSheet.hairlineWidth,
-    backgroundColor: "#C6C6C8",
     marginLeft: 16,
   },
   row: {
@@ -278,23 +309,19 @@ const styles = StyleSheet.create({
   },
   rowLabel: {
     fontSize: 15,
-    color: "#000",
   },
   rowValue: {
     fontSize: 15,
-    color: "#8E8E93",
     flexShrink: 1,
     marginLeft: 8,
     textAlign: "right",
   },
   rowValueEmpty: {
     fontSize: 15,
-    color: "#007AFF",
     marginLeft: 8,
   },
   input: {
     fontSize: 15,
-    color: "#000",
     flexShrink: 1,
     marginLeft: 8,
     textAlign: "right",
@@ -313,26 +340,17 @@ const styles = StyleSheet.create({
     paddingVertical: 13,
     alignItems: "center",
   },
-  cancelButton: {
-    backgroundColor: "#F2F2F7",
-  },
-  saveButton: {
-    backgroundColor: "#007AFF",
-  },
   cancelText: {
     fontSize: 15,
     fontWeight: "500",
-    color: "#3C3C43",
   },
   saveText: {
     fontSize: 15,
     fontWeight: "600",
-    color: "#fff",
   },
 
   // Sign out
   signOutButton: {
-    backgroundColor: "#F2F2F7",
     borderRadius: 12,
     paddingVertical: 14,
     alignItems: "center",
@@ -344,6 +362,5 @@ const styles = StyleSheet.create({
   signOutText: {
     fontSize: 15,
     fontWeight: "500",
-    color: "#FF3B30",
   },
 });

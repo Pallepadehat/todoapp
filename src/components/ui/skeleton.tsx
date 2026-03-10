@@ -1,3 +1,4 @@
+import { useThemeColor } from "@/utils/theme";
 import { StyleSheet, View } from "react-native";
 
 interface SkeletonProps {
@@ -5,10 +6,15 @@ interface SkeletonProps {
 }
 
 export default function Skeleton({ count = 3 }: SkeletonProps) {
+  const colors = useThemeColor();
+
   return (
     <View style={styles.skeletonContainer}>
       {Array.from({ length: count }).map((_, i) => (
-        <View key={i} style={styles.skeletonItem} />
+        <View
+          key={i}
+          style={[styles.skeletonItem, { backgroundColor: colors.skeleton }]}
+        />
       ))}
     </View>
   );
@@ -20,7 +26,6 @@ const styles = StyleSheet.create({
   },
   skeletonItem: {
     height: 60,
-    backgroundColor: "#e0e0e0",
     borderRadius: 8,
   },
 });

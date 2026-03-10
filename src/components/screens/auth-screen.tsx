@@ -1,4 +1,5 @@
 import db from "@/utils/db";
+import { useThemeColor } from "@/utils/theme";
 import { useState } from "react";
 import { Alert, Button, StyleSheet, Text, TextInput, View } from "react-native";
 
@@ -10,16 +11,23 @@ function Login() {
   const [sentEmail, setSentEmail] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [code, setCode] = useState<string>("");
+  const colors = useThemeColor();
 
   if (!sentEmail) {
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>Let&apos;s log you in!</Text>
+        <Text style={[styles.title, { color: colors.text }]}>
+          Let&apos;s log you in!
+        </Text>
         <TextInput
           placeholder="Enter your email"
+          placeholderTextColor={colors.textSecondary}
           value={email}
           onChangeText={setEmail}
-          style={styles.input}
+          style={[
+            styles.input,
+            { color: colors.text, borderColor: colors.border },
+          ]}
         />
         <Button
           title="Send code"
@@ -37,16 +45,22 @@ function Login() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Enter your code</Text>
-      <Text>
+      <Text style={[styles.title, { color: colors.text }]}>
+        Enter your code
+      </Text>
+      <Text style={{ color: colors.textSecondary }}>
         We sent an email to {sentEmail}. Check your email, and enter the code
         you see.
       </Text>
       <TextInput
         placeholder="123456..."
+        placeholderTextColor={colors.textSecondary}
         value={code}
         onChangeText={setCode}
-        style={styles.input}
+        style={[
+          styles.input,
+          { color: colors.text, borderColor: colors.border },
+        ]}
       />
       <Button
         title="Verify Code"
@@ -74,11 +88,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "bold",
+    marginBottom: 8,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
     padding: 8,
     marginVertical: 8,
+    borderRadius: 8,
   },
 });

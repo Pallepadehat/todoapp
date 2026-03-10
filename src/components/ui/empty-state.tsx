@@ -1,3 +1,4 @@
+import { useThemeColor } from "@/utils/theme";
 import { StyleSheet, Text, View } from "react-native";
 
 interface EmptyStateProps {
@@ -7,9 +8,13 @@ interface EmptyStateProps {
 export default function EmptyState({
   title = "No items yet. Add one!",
 }: EmptyStateProps) {
+  const colors = useThemeColor();
+
   return (
     <View style={styles.emptyContainer}>
-      <Text style={styles.emptyText}>{title}</Text>
+      <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+        {title}
+      </Text>
     </View>
   );
 }
@@ -22,6 +27,5 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    color: "#666",
   },
 });

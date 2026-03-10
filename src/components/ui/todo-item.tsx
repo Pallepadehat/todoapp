@@ -1,4 +1,5 @@
 import db from "@/utils/db";
+import { useThemeColor } from "@/utils/theme";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useRef, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
@@ -17,6 +18,7 @@ export default function TodoItem({ item }: TodoItemProps) {
   const [draft, setDraft] = useState(item.text);
   const swipeableRef = useRef<any>(null);
   const inputRef = useRef<TextInput>(null);
+  const colors = useThemeColor();
 
   useEffect(() => {
     if (isEditing) {
@@ -60,16 +62,19 @@ export default function TodoItem({ item }: TodoItemProps) {
     return (
       <View style={styles.rightActionsContainer}>
         <Pressable
-          style={styles.renameAction}
+          style={[styles.renameAction, { backgroundColor: colors.warning }]}
           onPress={() => {
             swipeableRef.current?.close();
             setIsEditing(true);
           }}
         >
-          <Ionicons name="pencil" size={20} color="#fff" />
+          <Ionicons name="pencil" size={20} color={colors.white} />
         </Pressable>
-        <Pressable style={styles.deleteAction} onPress={deleteTodo}>
-          <Ionicons name="trash" size={20} color="#fff" />
+        <Pressable
+          style={[styles.deleteAction, { backgroundColor: colors.error }]}
+          onPress={deleteTodo}
+        >
+          <Ionicons name="trash" size={20} color={colors.white} />
         </Pressable>
       </View>
     );
@@ -85,7 +90,8 @@ export default function TodoItem({ item }: TodoItemProps) {
       <View
         style={[
           styles.container,
-          item.isCompleted && styles.containerCompleted,
+          { backgroundColor: colors.card },
+          item.isCompleted && { backgroundColor: colors.cardCompleted },
         ]}
       >
         <Pressable
@@ -96,14 +102,14 @@ export default function TodoItem({ item }: TodoItemProps) {
           <Ionicons
             name={item.isCompleted ? "checkmark-circle" : "ellipse-outline"}
             size={24}
-            color={item.isCompleted ? "#007AFF" : "#C7C7CC"}
+            color={item.isCompleted ? colors.primary : colors.disabled}
           />
         </Pressable>
 
         {isEditing ? (
           <TextInput
             ref={inputRef}
-            style={styles.input}
+            style={[styles.input, { color: colors.text }]}
             value={draft}
             onChangeText={setDraft}
             onSubmitEditing={saveRename}
@@ -112,7 +118,14 @@ export default function TodoItem({ item }: TodoItemProps) {
           />
         ) : (
           <Text
-            style={[styles.text, item.isCompleted && styles.textCompleted]}
+            style={[
+              styles.text,
+              { color: colors.text },
+              item.isCompleted && [
+                styles.textCompleted,
+                { color: colors.textSecondary },
+              ],
+            ]}
             onLongPress={() => setIsEditing(true)}
           >
             {item.text || "Unnamed Todo"}
@@ -128,16 +141,12 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     borderRadius: 16,
     overflow: "hidden",
-    backgroundColor: "#FF9500",
   },
   container: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#ffffff",
     padding: 16,
-  },
-  containerCompleted: {
-    backgroundColor: "#F9F9FB",
+    borderRadius: 16,
   },
   toggleButton: {
     marginRight: 12,
@@ -145,16 +154,13 @@ const styles = StyleSheet.create({
   text: {
     flex: 1,
     fontSize: 16,
-    color: "#000",
   },
   textCompleted: {
-    color: "#8E8E93",
     textDecorationLine: "line-through",
   },
   input: {
     flex: 1,
     fontSize: 16,
-    color: "#000",
     padding: 0,
     margin: 0,
   },
@@ -164,13 +170,11 @@ const styles = StyleSheet.create({
   },
   renameAction: {
     width: 64,
-    backgroundColor: "#FF9500",
     justifyContent: "center",
     alignItems: "center",
   },
   deleteAction: {
     width: 64,
-    backgroundColor: "#FF3B30",
     justifyContent: "center",
     alignItems: "center",
   },
