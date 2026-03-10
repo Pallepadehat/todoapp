@@ -4,6 +4,10 @@ import { i } from "@instantdb/react-native";
 
 const _schema = i.schema({
   entities: {
+    todos: i.entity({
+      text: i.string(),
+      isCompleted: i.boolean(),
+    }),
     $files: i.entity({
       path: i.string().unique().indexed(),
       url: i.string(),
@@ -16,11 +20,24 @@ const _schema = i.schema({
     }),
     $users: i.entity({
       email: i.string().unique().indexed().optional(),
+      nickname: i.string().optional(),
       imageURL: i.string().optional(),
       type: i.string().optional(),
     }),
   },
   links: {
+    $todoAuthor: {
+      forward: {
+        on: "todos",
+        has: "one",
+        label: "author",
+      },
+      reverse: {
+        on: "$users",
+        has: "many",
+        label: "todos",
+      },
+    },
     $streams$files: {
       forward: {
         on: "$streams",
@@ -48,7 +65,6 @@ const _schema = i.schema({
       },
     },
   },
-  rooms: {},
 });
 
 // This helps TypeScript display nicer intellisense
