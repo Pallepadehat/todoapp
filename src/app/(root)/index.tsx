@@ -1,37 +1,67 @@
-import UserProfile from "@/components/user-profile";
+import TodolistScreen from "@/components/screens/todolist-screen";
+import FloatingTodoInput from "@/components/ui/floating-todo-input";
+import UserProfile from "@/components/ui/user-profile";
 import db from "@/utils/db";
+import { Ionicons } from "@expo/vector-icons";
+import { Stack } from "expo-router";
 import { useState } from "react";
-import { Button, StyleSheet, Text, View } from "react-native";
+import { Platform, Pressable } from "react-native";
 
 export default function Index() {
   const user = db.useUser();
   const [profileOpen, setProfileOpen] = useState(false);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Hello {user.email}</Text>
-        <Button title="Show Profile" onPress={() => setProfileOpen(true)} />
-      </View>
+    <>
+      {/* IOS */}
+      {Platform.OS !== "ios" ? (
+        <Stack.Screen
+          options={{
+            title: "Todos",
+            headerTitleAlign: "center",
+            headerRight: () => (
+              <Pressable
+                onPress={() => setProfileOpen(true)}
+                hitSlop={10}
+                style={{ paddingHorizontal: 16 }}
+              >
+                <Ionicons name="person" size={24} />
+              </Pressable>
+            ),
+            headerLeft: () => (
+              <Pressable
+                onPress={() => {}}
+                hitSlop={10}
+                style={{ paddingHorizontal: 16 }}
+              >
+                <Ionicons name="settings-sharp" size={24} />
+              </Pressable>
+            ),
+          }}
+        />
+      ) : (
+        <>
+          <Stack.Screen.Title>Todos</Stack.Screen.Title>
+          <Stack.Toolbar placement="right">
+            <Stack.Toolbar.Button
+              icon={"person"}
+              onPress={() => setProfileOpen(true)}
+            />
+          </Stack.Toolbar>
+          <Stack.Toolbar placement="left">
+            <Stack.Toolbar.Button icon={"gear"} onPress={() => {}} />
+          </Stack.Toolbar>
+        </>
+      )}
 
+      {/* TODO LIST SCREEN */}
+      <TodolistScreen />
+
+      {/* Floating Input Field */}
+      <FloatingTodoInput />
+
+      {/* User Profile Sheet */}
       <UserProfile isOpen={profileOpen} onClose={() => setProfileOpen(false)} />
-    </View>
+    </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  header: {
-    padding: 20,
-    paddingTop: 60,
-    alignItems: "center",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-});
