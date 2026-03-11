@@ -1,7 +1,6 @@
 import TodolistScreen from "@/components/screens/todolist-screen";
 import FloatingTodoInput from "@/components/ui/floating-todo-input";
 import UserProfile from "@/components/ui/user-profile";
-import db from "@/utils/db";
 import { useThemeColor } from "@/utils/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { Stack } from "expo-router";
@@ -9,7 +8,6 @@ import { useState } from "react";
 import { Platform, Pressable } from "react-native";
 
 export default function Index() {
-  const user = db.useUser();
   const [profileOpen, setProfileOpen] = useState(false);
   const colors = useThemeColor();
 
