@@ -7,6 +7,6 @@ if (!APP_ID) {
   throw new Error("Missing app id");
 }
 
-const db = init({ appId: APP_ID, schema: schema });
+const db = init({ appId: APP_ID, schema: schema, devtool: false });
 
 export default db;
